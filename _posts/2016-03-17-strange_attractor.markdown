@@ -14,11 +14,11 @@ reference: <a href="http://paulbourke.net/fractals/lyapunov/" target="blank">htt
 
 </br>
  In order for a system to exhibit chaotic behavior it must be non linear. Representing chaotic systems on a screen or on paper leads one to considering a two dimensional system, an equation in two variables. One possible two dimensional nonlinear system, the one used here, is the quadratic map defined as follows.
-</br>
+</br></br>
 xn+1 = a0 + a1 xn + a2 xn2 + a3 xn yn + a4 yn + a5 yn2
 </br>
 yn+1 = b0 + b1 xn + b2 xn2 + b3 xn yn + b4 yn + b5 yn2 
-<br> 
+<br></br> 
  The standard measure for determining whether or not a system is chaotic is the Lyapunov exponent, normally represented by the lambda symbol. Consider two close points at step n, xn and xn+dxn. At the next time step they will have diverged, namely to xn+1 and xn+1+dxn+1. It is this average rate of divergence (or convergence) that the Lyapunov exponent captures. Another way to think about the Lyapunov exponent is as the rate at which information about the initial conditions is lost.
 
 There are as many Lyapunov exponents as dimensions of the phase space. Considering a region (circle, sphere, hypersphere, etc) in phase space then at a later time all trajectories in this region form an n-dimensional elliptical region. The Lyapunov exponent can be calculated for each dimension. When talking about a single exponent one is normally referring to the largest, this convention will be assumed from now onwards.

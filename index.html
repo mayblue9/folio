@@ -1,3 +1,4 @@
+<!--
 ---
 layout: default
 ---
@@ -22,3 +23,339 @@ layout: default
       </li>
     {% endfor %}
 </ul>
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        svg {
+            background:#372830;
+        }
+        circle {
+            fill: #424744;
+            stroke-width: 1.5px;
+        }
+        text {
+            font: 11px  'Malgun Gothic';
+            pointer-events: none;
+            text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+        }
+        .d3-tip {
+            line-height: 1;
+            font-weight: bold;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #efefef;
+            border-radius: 2px;
+        }
+       
+        .d3-tip:after {
+            box-sizing: border-box;
+            display: inline;
+            font-size: 10px;
+            width: 100%;
+            line-height: 1;
+            color: rgba(0, 0, 0, 0.8);
+            content: "\25BC";
+            position: absolute;
+            text-align: center;
+        }
+       
+        .d3-tip.n:after {
+            margin: -1px 0 0 0;
+            top: 100%;
+            left: 0;
+        }
+        .legend rect {
+            fill:white;
+            stroke:black;
+            opacity:0.8;}
+    </style>
+
+</head>
+<body>
+
+<div id="vis"></div>
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3-legend/1.10.0/d3-legend.js"></script>
+<script type="text/javascript">
+    var links = [
+        {source:"무지개아파트사거리",target:"외환은행서초남지점",type:"1",speed:"31.0",source_loc:[37.4886075806,127.0284844606],target_loc:[37.4861761197,127.0212569778]},
+        {source:"도곡1동주민센터사거리",target:"구역삼세무서사거리",type:"2",speed:"5.0",source_loc:[37.4923262312,127.0406547867],target_loc:[37.4958003618,127.039015258]},
+        {source:"역삼역",target:"구역삼세무서사거리",type:"2",speed:"5.0",source_loc:[37.5009807702,127.0371339531],target_loc:[37.4958003618,127.039015258]},
+        {source:"역삼초교사거리",target:"구역삼세무서사거리",type:"2",speed:"6.0",source_loc:[37.4938807586,127.0335085457],target_loc:[37.4958003618,127.039015258]},
+        {source:"역삼개나리아파트사거리",target:"구역삼세무서사거리",type:"2",speed:"5.0",source_loc:[37.4985964991,127.0449408196],target_loc:[37.4958003618,127.039015258]},
+        {source:"서일중교",target:"진흥아파트사거리",type:"1",speed:"14.0",source_loc:[37.4984142022,127.0232209466],target_loc:[37.4967835582,127.0240351787]},
+        {source:"서초1교",target:"진흥아파트사거리",type:"1",speed:"9.0",source_loc:[37.4956557847,127.0211269045],target_loc:[37.4967835582,127.0240351787]},
+        {source:"서이초교사거리",target:"진흥아파트사거리",type:"1",speed:"19.0",source_loc:[37.4832227445,127.022633964],target_loc:[37.4967835582,127.0240351787]},
+        {source:"GT타워이스트",target:"진흥아파트사거리",type:"1",speed:"39.0",source_loc:[37.4976830924,127.0257509051],target_loc:[37.4967835582,127.0240351787]},
+        {source:"서이초교사거리",target:"서초어린이도서관",type:"1",speed:"15.0",source_loc:[37.4832227445,127.022633964],target_loc:[37.4923336431,127.0283553035]},
+        {source:"서초우성아파트앞사거리",target:"서초어린이도서관",type:"2",speed:"15.0",source_loc:[37.4929303418,127.0296028613],target_loc:[37.4923336431,127.0283553035]},
+        {source:"구역삼세무서사거리",target:"도곡1동주민센터사거리",type:"1",speed:"10.0",source_loc:[37.4958003618,127.039015258],target_loc:[37.4923262312,127.0406547867]},
+        {source:"은광여중고교입구",target:"도곡1동주민센터사거리",type:"2",speed:"9.0",source_loc:[37.4908147006,127.034976268],target_loc:[37.4923262312,127.0406547867]},
+        {source:"서초우성아파트앞사거리",target:"기업은행역삼중앙지점",type:"2",speed:"22.0",source_loc:[37.4929303418,127.0296028613],target_loc:[37.4933819074,127.0318567389]},
+        {source:"역삼초교사거리",target:"기업은행역삼중앙지점",type:"2",speed:"4.0",source_loc:[37.4938807586,127.0335085457],target_loc:[37.4933819074,127.0318567389]},
+        {source:"구역삼세무서사거리",target:"역삼초교사거리",type:"1",speed:"25.0",source_loc:[37.4958003618,127.039015258],target_loc:[37.4938807586,127.0335085457]},
+        {source:"기업은행역삼중앙지점",target:"역삼초교사거리",type:"1",speed:"8.0",source_loc:[37.4933819074,127.0318567389],target_loc:[37.4938807586,127.0335085457]},
+        {source:"국기원입구",target:"역삼초교사거리",type:"1",speed:"5.0",source_loc:[37.4987165945,127.0311777571],target_loc:[37.4938807586,127.0335085457]},
+        {source:"은광여중고교입구",target:"역삼초교사거리",type:"2",speed:"11.0",source_loc:[37.4908147006,127.034976268],target_loc:[37.4938807586,127.0335085457]},
+        {source:"뱅뱅사거리",target:"양재역",type:"1",speed:"27.0",source_loc:[37.4896642446,127.0319859786],target_loc:[37.4845729204,127.0336086136]},
+        {source:"교육개발원사거리",target:"양재역",type:"1",speed:"18.0",source_loc:[37.4780362111,127.0382718652],target_loc:[37.4845729204,127.0336086136]},
+        {source:"학동역",target:"논현역",type:"2",speed:"8.0",source_loc:[37.5141802976,127.0306473038],target_loc:[37.5112349702,127.0217344144]},
+        {source:"신사역사거리",target:"논현역",type:"2",speed:"19.0",source_loc:[37.5160240675,127.0191439624],target_loc:[37.5112349702,127.0217344144]},
+        {source:"잠원IC",target:"논현역",type:"2",speed:"8.0",source_loc:[37.5088837162,127.015009884],target_loc:[37.5112349702,127.0217344144]},
+        {source:"교보타워사거리",target:"논현역",type:"1",speed:"13.0",source_loc:[37.504361379,127.0241210522],target_loc:[37.5112349702,127.0217344144]},
+        {source:"강남역",target:"우리은행강남역지점",type:"1",speed:"7.0",source_loc:[37.4979100896,127.0272369567],target_loc:[37.4993805313,127.0265258575]},
+        {source:"교보타워사거리",target:"우리은행강남역지점",type:"1",speed:"17.0",source_loc:[37.504361379,127.0241210522],target_loc:[37.4993805313,127.0265258575]},
+        {source:"서울교대사거리",target:"서이초교사거리",type:"1",speed:"21.0",source_loc:[37.4881794056,127.0147060199],target_loc:[37.4832227445,127.022633964]},
+        {source:"진흥아파트사거리",target:"서이초교사거리",type:"2",speed:"15.0",source_loc:[37.4967835582,127.0240351787],target_loc:[37.4832227445,127.022633964]},
+        {source:"서초어린이도서관",target:"서이초교사거리",type:"2",speed:"18.0",source_loc:[37.4923336431,127.0283553035],target_loc:[37.4832227445,127.022633964]},
+        {source:"무지개아파트사거리",target:"서이초교사거리",type:"1",speed:"17.0",source_loc:[37.4886075806,127.0284844606],target_loc:[37.4832227445,127.022633964]},
+        {source:"양재역",target:"뱅뱅사거리",type:"2",speed:"12.0",source_loc:[37.4845729204,127.0336086136],target_loc:[37.4896642446,127.0319859786]},
+        {source:"옥신빌딩",target:"뱅뱅사거리",type:"2",speed:"20.0",source_loc:[37.4899068831,127.0335093309],target_loc:[37.4896642446,127.0319859786]},
+        {source:"무지개아파트사거리",target:"뱅뱅사거리",type:"1",speed:"13.0",source_loc:[37.4886075806,127.0284844606],target_loc:[37.4896642446,127.0319859786]},
+        {source:"서초우성아파트앞사거리",target:"뱅뱅사거리",type:"2",speed:"28.0",source_loc:[37.4929303418,127.0296028613],target_loc:[37.4896642446,127.0319859786]},
+        {source:"논현역",target:"신사역사거리",type:"1",speed:"9.0",source_loc:[37.5112349702,127.0217344144],target_loc:[37.5160240675,127.0191439624]},
+        {source:"교보타워사거리",target:"차병원사거리",type:"1",speed:"11.0",source_loc:[37.504361379,127.0241210522],target_loc:[37.507398938,127.0341339798]},
+        {source:"학동역",target:"차병원사거리",type:"2",speed:"10.0",source_loc:[37.5141802976,127.0306473038],target_loc:[37.507398938,127.0341339798]},
+        {source:"경복아파트사거리",target:"차병원사거리",type:"1",speed:"5.0",source_loc:[37.5088963577,127.038380892],target_loc:[37.507398938,127.0341339798]},
+        {source:"역삼역",target:"차병원사거리",type:"1",speed:"6.0",source_loc:[37.5009807702,127.0371339531],target_loc:[37.507398938,127.0341339798]},
+        {source:"차병원사거리",target:"역삼역",type:"2",speed:"23.0",source_loc:[37.507398938,127.0341339798],target_loc:[37.5009807702,127.0371339531]},
+        {source:"국기원입구",target:"역삼역",type:"1",speed:"11.0",source_loc:[37.4987165945,127.0311777571],target_loc:[37.5009807702,127.0371339531]},
+        {source:"르네상스호텔사거리",target:"역삼역",type:"1",speed:"11.0",source_loc:[37.5027541181,127.0429639807],target_loc:[37.5009807702,127.0371339531]},
+        {source:"구역삼세무서사거리",target:"역삼역",type:"1",speed:"7.0",source_loc:[37.4958003618,127.039015258],target_loc:[37.5009807702,127.0371339531]},
+        {source:"강남역",target:"국기원입구",type:"1",speed:"19.0",source_loc:[37.4979100896,127.0272369567],target_loc:[37.4987165945,127.0311777571]},
+        {source:"역삼역",target:"국기원입구",type:"2",speed:"13.0",source_loc:[37.5009807702,127.0371339531],target_loc:[37.4987165945,127.0311777571]},
+        {source:"역삼초교사거리",target:"국기원입구",type:"2",speed:"12.0",source_loc:[37.4938807586,127.0335085457],target_loc:[37.4987165945,127.0311777571]},
+        {source:"서초4동사무소입구",target:"서일중교",type:"2",speed:"21.0",source_loc:[37.5032488146,127.0211848701],target_loc:[37.4984142022,127.0232209466]},
+        {source:"진흥아파트사거리",target:"서일중교",type:"2",speed:"11.0",source_loc:[37.4967835582,127.0240351787],target_loc:[37.4984142022,127.0232209466]},
+        {source:"서초4동사무소입구",target:"GS삼방주유소",type:"2",speed:"18.0",source_loc:[37.5032488146,127.0211848701],target_loc:[37.5041628452,127.0227030256]},
+        {source:"교보타워사거리",target:"GS삼방주유소",type:"2",speed:"16.0",source_loc:[37.504361379,127.0241210522],target_loc:[37.5041628452,127.0227030256]},
+        {source:"양재역",target:"교육개발원사거리",type:"2",speed:"27.0",source_loc:[37.4845729204,127.0336086136],target_loc:[37.4780362111,127.0382718652]},
+        {source:"르네상스호텔사거리",target:"역삼개나리아파트사거리",type:"1",speed:"13.0",source_loc:[37.5027541181,127.0429639807],target_loc:[37.4985964991,127.0449408196]},
+        {source:"구역삼세무서사거리",target:"역삼개나리아파트사거리",type:"1",speed:"5.0",source_loc:[37.4958003618,127.039015258],target_loc:[37.4985964991,127.0449408196]},
+        {source:"경복아파트사거리",target:"르네상스호텔사거리",type:"1",speed:"9.0",source_loc:[37.5088963577,127.038380892],target_loc:[37.5027541181,127.0429639807]},
+        {source:"역삼역",target:"르네상스호텔사거리",type:"2",speed:"10.0",source_loc:[37.5009807702,127.0371339531],target_loc:[37.5027541181,127.0429639807]},
+        {source:"역삼개나리아파트사거리",target:"르네상스호텔사거리",type:"2",speed:"22.0",source_loc:[37.4985964991,127.0449408196],target_loc:[37.5027541181,127.0429639807]},
+        {source:"선릉역",target:"르네상스호텔사거리",type:"2",speed:"13.0",source_loc:[37.5048200454,127.048865648],target_loc:[37.5027541181,127.0429639807]},
+        {source:"서일중교",target:"서초4동사무소입구",type:"1",speed:"5.0",source_loc:[37.4984142022,127.0232209466],target_loc:[37.5032488146,127.0211848701]},
+        {source:"GS삼방주유소",target:"서초4동사무소입구",type:"1",speed:"12.0",source_loc:[37.5041628452,127.0227030256],target_loc:[37.5032488146,127.0211848701]},
+        {source:"교대법원검찰청사거리",target:"서초1교",type:"1",speed:"14.0",source_loc:[37.4934339577,127.0137970659],target_loc:[37.4956557847,127.0211269045]},
+        {source:"원명초교",target:"서초1교",type:"2",speed:"20.0",source_loc:[37.50053728,127.0191623339],target_loc:[37.4956557847,127.0211269045]},
+        {source:"진흥아파트사거리",target:"서초1교",type:"2",speed:"25.0",source_loc:[37.4967835582,127.0240351787],target_loc:[37.4956557847,127.0211269045]},
+        {source:"논현역",target:"학동역",type:"1",speed:"19.0",source_loc:[37.5112349702,127.0217344144],target_loc:[37.5141802976,127.0306473038]},
+        {source:"차병원사거리",target:"학동역",type:"1",speed:"24.0",source_loc:[37.507398938,127.0341339798],target_loc:[37.5141802976,127.0306473038]},
+        {source:"옥신빌딩",target:"은광여중고교입구",type:"1",speed:"13.0",source_loc:[37.4899068831,127.0335093309],target_loc:[37.4908147006,127.034976268]},
+        {source:"역삼초교사거리",target:"은광여중고교입구",type:"1",speed:"10.0",source_loc:[37.4938807586,127.0335085457],target_loc:[37.4908147006,127.034976268]},
+        {source:"도곡1동주민센터사거리",target:"은광여중고교입구",type:"1",speed:"33.0",source_loc:[37.4923262312,127.0406547867],target_loc:[37.4908147006,127.034976268]},
+        {source:"차병원사거리",target:"경복아파트사거리",type:"2",speed:"22.0",source_loc:[37.507398938,127.0341339798],target_loc:[37.5088963577,127.038380892]},
+        {source:"르네상스호텔사거리",target:"경복아파트사거리",type:"2",speed:"11.0",source_loc:[37.5027541181,127.0429639807],target_loc:[37.5088963577,127.038380892]},
+        {source:"논현역",target:"잠원IC",type:"1",speed:"25.0",source_loc:[37.5112349702,127.0217344144],target_loc:[37.5088837162,127.015009884]},
+        {source:"우리은행강남역지점",target:"강남역",type:"2",speed:"12.0",source_loc:[37.4993805313,127.0265258575],target_loc:[37.4979100896,127.0272369567]},
+        {source:"서초우성아파트앞사거리",target:"강남역",type:"2",speed:"6.0",source_loc:[37.4929303418,127.0296028613],target_loc:[37.4979100896,127.0272369567]},
+        {source:"국기원입구",target:"강남역",type:"2",speed:"9.0",source_loc:[37.4987165945,127.0311777571],target_loc:[37.4979100896,127.0272369567]},
+        {source:"GT타워이스트",target:"강남역",type:"1",speed:"8.0",source_loc:[37.4976830924,127.0257509051],target_loc:[37.4979100896,127.0272369567]},
+        {source:"르네상스호텔사거리",target:"선릉역",type:"1",speed:"24.0",source_loc:[37.5027541181,127.0429639807],target_loc:[37.5048200454,127.048865648]},
+        {source:"서초1교",target:"교대법원검찰청사거리",type:"2",speed:"7.0",source_loc:[37.4956557847,127.0211269045],target_loc:[37.4934339577,127.0137970659]},
+        {source:"논현역",target:"교보타워사거리",type:"2",speed:"17.0",source_loc:[37.5112349702,127.0217344144],target_loc:[37.504361379,127.0241210522]},
+        {source:"우리은행강남역지점",target:"교보타워사거리",type:"2",speed:"6.0",source_loc:[37.4993805313,127.0265258575],target_loc:[37.504361379,127.0241210522]},
+        {source:"차병원사거리",target:"교보타워사거리",type:"2",speed:"14.0",source_loc:[37.507398938,127.0341339798],target_loc:[37.504361379,127.0241210522]},
+        {source:"GS삼방주유소",target:"교보타워사거리",type:"1",speed:"13.0",source_loc:[37.5041628452,127.0227030256],target_loc:[37.504361379,127.0241210522]},
+        {source:"뱅뱅사거리",target:"옥신빌딩",type:"1",speed:"16.0",source_loc:[37.4896642446,127.0319859786],target_loc:[37.4899068831,127.0335093309]},
+        {source:"은광여중고교입구",target:"옥신빌딩",type:"2",speed:"29.0",source_loc:[37.4908147006,127.034976268],target_loc:[37.4899068831,127.0335093309]},
+        {source:"서이초교사거리",target:"무지개아파트사거리",type:"2",speed:"13.0",source_loc:[37.4832227445,127.022633964],target_loc:[37.4886075806,127.0284844606]},
+        {source:"뱅뱅사거리",target:"무지개아파트사거리",type:"2",speed:"16.0",source_loc:[37.4896642446,127.0319859786],target_loc:[37.4886075806,127.0284844606]},
+        {source:"서초구청",target:"무지개아파트사거리",type:"2",speed:"15.0",source_loc:[37.4857746322,127.0413235141],target_loc:[37.4886075806,127.0284844606]},
+        {source:"외환은행서초남지점",target:"무지개아파트사거리",type:"2",speed:"18.0",source_loc:[37.4861761197,127.0212569778],target_loc:[37.4886075806,127.0284844606]},
+        {source:"서이초교사거리",target:"서울교대사거리",type:"2",speed:"17.0",source_loc:[37.4832227445,127.022633964],target_loc:[37.4881794056,127.0147060199]},
+        {source:"무지개아파트사거리",target:"서초구청",type:"1",speed:"18.0",source_loc:[37.4886075806,127.0284844606],target_loc:[37.4857746322,127.0413235141]},
+        {source:"뱅뱅사거리",target:"서초우성아파트앞사거리",type:"1",speed:"6.0",source_loc:[37.4896642446,127.0319859786],target_loc:[37.4929303418,127.0296028613]},
+        {source:"강남역",target:"서초우성아파트앞사거리",type:"1",speed:"9.0",source_loc:[37.4979100896,127.0272369567],target_loc:[37.4929303418,127.0296028613]},
+        {source:"서초어린이도서관",target:"서초우성아파트앞사거리",type:"1",speed:"9.0",source_loc:[37.4923336431,127.0283553035],target_loc:[37.4929303418,127.0296028613]},
+        {source:"기업은행역삼중앙지점",target:"서초우성아파트앞사거리",type:"1",speed:"5.0",source_loc:[37.4933819074,127.0318567389],target_loc:[37.4929303418,127.0296028613]},
+        {source:"서초1교",target:"원명초교",type:"1",speed:"25.0",source_loc:[37.4956557847,127.0211269045],target_loc:[37.50053728,127.0191623339]},
+        {source:"강남역",target:"GT타워이스트",type:"2",speed:"37.0",source_loc:[37.4979100896,127.0272369567],target_loc:[37.4976830924,127.0257509051]},
+        {source:"진흥아파트사거리",target:"GT타워이스트",type:"2",speed:"12.0",source_loc:[37.4967835582,127.0240351787],target_loc:[37.4976830924,127.0257509051]}
+    ];
+    var width = 850,
+        height = 900; 
+    var  nodes = [];
+    var force = d3.layout.force()
+            .nodes(d3.values(nodes))
+            .links(links)
+            .size([width, height])
+            .linkDistance(80)
+            .charge(-800)
+            .on("tick", tick);
+    var svg = d3.select("#vis").append("svg")
+            .attr("width", width)
+            .attr("height", height);
+    var path = svg.append("g").selectAll("path"),
+        circle = svg.append("g").selectAll("circle"),
+        text = svg.append("g").selectAll("text"),
+        marker = svg.append("defs").selectAll("marker");
+    var color = d3.scale.linear()
+            .range(["#284ff2", "#28cbf2", "#d9a238", "#d94b38", "#b91600"])
+            .domain([50, 30, 20, 10, 0]);
+    var sWidth = d3.scale.linear()
+            .range([7.5, 6, 4, 3, 1])
+            .domain([50, 30, 20, 10, 0]);
+    //add  tip
+    var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .offset([-10, 0])
+            .html(function(d) {
+                return "<strong>" + "속도:" + d.speed + "km/s" + "</strong><br/><span style='color:#fff'>" + "</span>";
+            })
+    update(links);
+    function update(links) {
+        d3.values(nodes).forEach(function(aNode) {
+            aNode.linkCount = 0;
+        });
+        links.forEach(function(link) {
+            link.source = nodes[link.source] || (nodes[link.source] = {
+                        name: link.source,
+                        linkCount: 0
+                    });
+            link.source.linkCount++;
+            link.target = nodes[link.target] || (nodes[link.target] = {
+                        name: link.target,
+                        linkCount: 0
+                    });
+            link.target.linkCount++;
+        });
+        d3.keys(nodes).forEach(
+                function(nodeKey) {
+                    if (!nodes[nodeKey].linkCount) {
+                        delete(nodes[nodeKey]);
+                    }
+                }
+        );
+        force.nodes(d3.values(nodes))
+                .links(links)
+                .start();
+        // marker
+        marker = marker.data(["1", "2"]);
+        marker.enter().append("marker")
+                .attr("id", function(d) {
+                    return d;
+                })
+                .attr("viewBox", "0 -5 10 10")
+                .attr("refX", 9)
+                .attr("refY", -0.1) //-1.5
+                .attr("markerWidth", 3)
+                .attr("markerHeight", 5)
+                .attr("orient", "auto")
+                .append("path")
+                .attr("d", "M0,-5L10,0L0,5")
+                .style("opacity", "0.8");
+         marker.exit().remove();
+        //  path
+        path = path.data(force.links());
+        path.enter().append("path")
+                .attr("class", function(d) {
+                    return "link " + d.type;
+                })
+                .style("stroke", function(d) {
+                    return color(d.speed)
+                })
+                .style("stroke-width", function(d) {
+                    return sWidth(d.speed)
+                })
+                .attr("marker-end", function(d) {
+                    return "url(#" + d.type + ")";
+                })
+                .on('mouseover', tip.show)
+                .on('mouseout', tip.hide)
+        path.call(tip);
+        path.exit().remove();
+        // circle
+        var nodeSize = 8;
+        circle= circle.data(force.nodes());
+        circle.enter().append("circle")
+              .attr("r", function(d) {
+            if (d.name == "강남역") {
+                return 12;
+            } else
+                return nodeSize;
+        })
+                .style("fill", function(d) {
+                    if (d.name == "강남역") {
+                        return "#ffa603";
+                    }
+                })
+                .style("stroke", function(d) {
+                    if (d.name == "강남역") {
+                        return "#f2750a";
+                    }
+                })
+                .style("stroke-width", function(d) {
+                    if (d.name == "강남역") {
+                        return "5";
+                    }
+                })
+                .style("opacity", ".95")
+                .call(force.drag);
+        circle.exit().remove();
+        // text
+        text = text.data(force.nodes());
+        text.enter().append("text")
+                .attr("x", 8)
+                .attr("y", ".31em")
+                .text(function(d) {
+                    return d.name;
+                });
+        text.exit().remove();
+        // legend
+        var legend = svg.selectAll(".legend")
+                .data(color.domain().slice().reverse())
+                .enter().append("g")
+                .attr("class", "legend")
+                .attr("transform", function(d, i) {
+                    return "translate(0," + i * 20 + ")";
+                });
+        legend.append("rect")
+                .attr("x", width-25)
+                .attr("width", 18)
+                .attr("height", 18)
+                .style("fill", color);
+        legend.append("text")
+                .attr("x", width -30)
+                .attr("y", 9)
+                .attr("dy", ".35em")
+                .style("text-anchor", "end")
+                .text(function(d) {
+                    return d + "km/s";
+                });
+    }
+    function tick() {
+        path.attr("d", linkLine);
+        circle.attr("transform", transform);
+        text.attr("transform", transform);
+    }
+    function linkArc(d) {
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y,
+            dr =-220;
+        return "M" + d.source.x + "," + d.source.y + "A" + dr + "," + dr + " 0 0,1 " + d.target.x + "," + d.target.y;
+    }
+    function linkLine(d) {
+        var nodeSize = 6;
+        var dx = d.target.x - d.source.x,
+            dy = d.target.y - d.source.y;
+        var angle0 = (Math.atan2(dx, dy) + (Math.PI / 2));
+        var angle1 = angle0 + (Math.PI * 0.75);
+        var angle2 = angle0 + (Math.PI * 0.25);
+        return "M" + (d.source.x + (nodeSize * Math.cos(angle1))) + "," + (d.source.y - (nodeSize * Math.sin(angle1))) + "L" + (d.target.x + (nodeSize * Math.cos(angle2))) + "," + (d.target.y - (nodeSize * Math.sin(angle2)));
+    }
+    function transform(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+    }
+</script>
+</body>
+</html>
